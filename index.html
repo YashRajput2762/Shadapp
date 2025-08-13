@@ -1,0 +1,324 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width,initial-scale=1" />
+<title>SHAD DON HERE</title>
+<style>
+  :root {
+    --bg:#0f172a;
+    --card:#0b1220;
+    --muted:#94a3b8;
+    --accent:#7c3aed;
+    --ok:#16a34a;
+    --err:#ef4444;
+
+    --primary: #00e0ff;
+    --primary-hover: #00b5cc;
+    --dark: rgba(10, 10, 20, 0.9);
+    --dark-secondary: rgba(20, 20, 40, 0.8);
+    --dark-tertiary: rgba(30, 30, 60, 0.7);
+  }
+
+  * {
+    box-sizing: border-box;
+    font-family: 'Inter', system-ui, Arial, sans-serif;
+  }
+
+  body {
+    margin: 0;
+    background:
+      linear-gradient(
+        135deg,
+        var(--dark) 0%,
+        var(--dark-secondary) 50%,
+        var(--dark-tertiary) 100%
+      ),
+      url('https://i.supaimg.com/7d7660da-a617-429d-80c9-b670c15526bf.jpg');
+    background-size: cover;
+    background-position: center;
+    background-repeat: no-repeat;
+    background-attachment: fixed;
+    color: white;
+    display: flex;
+    justify-content: center;
+    align-items: flex-start;
+    min-height: 100vh;
+    padding: 24px;
+  }
+
+  .container {
+    background: rgba(0, 0, 0, 0.6);
+    backdrop-filter: blur(10px);
+    border-radius: 15px;
+    padding: 25px;
+    box-shadow: 0 0 25px rgba(0, 224, 255, 0.3);
+    max-width: 1100px;
+    width: 100%;
+  }
+
+  .card {
+    background: rgba(255,255,255,0.02);
+    padding: 18px;
+    border-radius: 12px;
+    border: 1px solid rgba(255,255,255,0.05);
+    margin-top: 15px;
+  }
+
+  .hidden {display: none;}
+
+  input, button, select {
+    padding: 10px;
+    margin: 4px 0;
+    border-radius: 8px;
+    border: 1px solid rgba(255,255,255,0.2);
+    background: rgba(255, 255, 255, 0.1);
+    color: white;
+    width: 100%;
+  }
+
+  input:focus {
+    border-color: var(--primary);
+    outline: none;
+    box-shadow: 0 0 8px var(--primary);
+  }
+
+  button {
+    background: var(--primary);
+    border: none;
+    cursor: pointer;
+    font-size: 1rem;
+    transition: 0.3s ease;
+  }
+
+  button:hover {
+    background: var(--primary-hover);
+    box-shadow: 0 0 15px var(--primary);
+  }
+
+  table {
+    width: 100%;
+    border-collapse: collapse;
+    margin-top: 10px;
+  }
+
+  th, td {
+    padding: 6px;
+    border-bottom: 1px solid rgba(255,255,255,0.05);
+    text-align: left;
+  }
+
+  .chip {
+    padding: 2px 6px;
+    border-radius: 999px;
+    font-size: 12px;
+  }
+
+  .status-pending {background:#f59e0b;color:black;}
+  .status-approved {background:var(--ok);color:black;}
+  .status-rejected {background:var(--err);color:white;}
+
+  img.link-img {
+    width: 100px;
+    height: 60px;
+    object-fit: cover;
+    border-radius: 6px;
+    margin-right: 8px;
+  }
+</style>
+</head>
+<body>
+<div class="container">
+
+<h2>WELCOME TO SHAD PANEL</h2>
+<div>
+  <button onclick="showView('signupView')">Signup</button>
+  <button onclick="showView('loginView')">User Login</button>
+  <button onclick="showAdminLogin()">Admin Panel</button>
+  <button id="btnLogoutUser" class="hidden" onclick="logoutUser()">Logout User</button>
+  <button id="btnLogoutAdmin" class="hidden" onclick="logoutAdmin()">Logout Admin</button>
+</div>
+
+<!-- Signup -->
+<div id="signupView" class="card hidden">
+  <h3>User Signup</h3>
+  <input id="suName" placeholder="Name" required>
+  <input id="suEmail" placeholder="Email" required>
+  <input id="suPass" type="password" placeholder="Password" required>
+  <button onclick="signupUser()">Signup</button>
+</div>
+
+<!-- User Login -->
+<div id="loginView" class="card hidden">
+  <h3>User Login</h3>
+  <input id="luEmail" placeholder="Email" required>
+  <input id="luPass" type="password" placeholder="Password" required>
+  <button onclick="loginUser()">Login</button>
+</div>
+
+<!-- User Panel -->
+<div id="userPanel" class="card hidden">
+  <h3>Welcome, <span id="userName"></span></h3>
+  <div id="approvalMsg"></div>
+  <div id="userLinks" class="hidden">
+    <h4>Links from Admin:</h4>
+    <ul id="linksList" style="list-style:none;padding:0"></ul>
+  </div>
+</div>
+
+<!-- Admin Login Modal -->
+<div id="adminLoginView" class="card hidden">
+  <h3>Admin Login</h3>
+  <input id="adminPass" type="password" placeholder="Password">
+  <button onclick="loginAdmin()">Login</button>
+</div>
+
+<!-- Admin Panel -->
+<div id="adminPanel" class="card hidden">
+  <h3>Admin Panel</h3>
+  <h4>All Users</h4>
+  <table>
+    <thead><tr><th>Name</th><th>Email</th><th>Status</th><th>Action</th></tr></thead>
+    <tbody id="adminUserTable"></tbody>
+  </table>
+  <h4>Add Link for Users</h4>
+  <input id="linkTitle" placeholder="Title">
+  <input id="linkURL" placeholder="https://...">
+  <input id="linkIMG" placeholder="Image URL">
+  <button onclick="addLink()">Add Link</button>
+  <h4>All Links</h4>
+  <ul id="adminLinksList" style="list-style:none;padding:0"></ul>
+</div>
+
+</div>
+
+<script>
+function loadUsers(){return JSON.parse(localStorage.getItem('users')||'[]')}
+function saveUsers(u){localStorage.setItem('users',JSON.stringify(u))}
+function loadLinks(){return JSON.parse(localStorage.getItem('admin_links')||'[]')}
+function saveLinks(l){localStorage.setItem('admin_links',JSON.stringify(l))}
+if(!localStorage.getItem('admin_pass')) localStorage.setItem('admin_pass','shad####')
+
+let currentUser=null;
+let adminLogged=false;
+
+function showView(id){
+  document.querySelectorAll('.card').forEach(c=>c.classList.add('hidden'))
+  document.getElementById(id).classList.remove('hidden')
+}
+
+function signupUser(){
+  let name=suName.value.trim(), email=suEmail.value.trim(), pass=suPass.value.trim();
+  if(!name||!email||!pass) return alert("Fill all fields")
+  let users=loadUsers();
+  if(users.some(u=>u.email===email)) return alert("Email exists")
+  users.push({name,email,pass,status:"pending"})
+  saveUsers(users)
+  alert("Your request is under Shad approval.")
+  suName.value=suEmail.value=suPass.value=""
+  showView('loginView')
+}
+
+function loginUser(){
+  let email=luEmail.value.trim(), pass=luPass.value.trim();
+  let users=loadUsers()
+  let u=users.find(x=>x.email===email && x.pass===pass)
+  if(!u) return alert("Invalid credentials")
+  currentUser=u;
+  document.getElementById('userName').innerText=u.name
+  showView('userPanel')
+  document.getElementById('btnLogoutUser').classList.remove('hidden')
+  if(u.status==="approved"){
+    document.getElementById('approvalMsg').innerHTML="<span style='color:var(--ok)'>✅ Approved</span>";
+    document.getElementById('userLinks').classList.remove('hidden');
+    renderUserLinks();
+  } else if(u.status==="pending"){
+    document.getElementById('approvalMsg').innerHTML="<span style='color:orange'>⏳ Pending Approval</span>";
+  } else {
+    document.getElementById('approvalMsg').innerHTML="<span style='color:var(--err)'>❌ Rejected</span>";
+  }
+}
+
+function logoutUser(){
+  currentUser=null;
+  document.getElementById('btnLogoutUser').classList.add('hidden');
+  showView('loginView');
+}
+
+function showAdminLogin(){
+  showView('adminLoginView');
+}
+
+function loginAdmin(){
+  let pass=adminPass.value.trim();
+  if(pass===localStorage.getItem('admin_pass')){
+    adminLogged=true;
+    document.getElementById('btnLogoutAdmin').classList.remove('hidden');
+    showView('adminPanel');
+    renderAdminUsers();
+    renderAdminLinks();
+  } else {
+    alert("Wrong admin password");
+  }
+}
+
+function logoutAdmin(){
+  adminLogged=false;
+  document.getElementById('btnLogoutAdmin').classList.add('hidden');
+  showView('loginView');
+}
+
+function renderAdminUsers(){
+  let users=loadUsers();
+  let html="";
+  users.forEach((u,i)=>{
+    html+=`<tr>
+      <td>${u.name}</td>
+      <td>${u.email}</td>
+      <td><span class="chip status-${u.status}">${u.status}</span></td>
+      <td>
+        <button onclick="updateStatus(${i},'approved')">Approve</button>
+        <button onclick="updateStatus(${i},'rejected')">Reject</button>
+      </td>
+    </tr>`;
+  });
+  adminUserTable.innerHTML=html;
+}
+
+function updateStatus(index,status){
+  let users=loadUsers();
+  users[index].status=status;
+  saveUsers(users);
+  renderAdminUsers();
+}
+
+function addLink(){
+  let title=linkTitle.value.trim(), url=linkURL.value.trim(), img=linkIMG.value.trim();
+  if(!title||!url) return alert("Enter title and URL");
+  let links=loadLinks();
+  links.push({title,url,img});
+  saveLinks(links);
+  linkTitle.value=linkURL.value=linkIMG.value="";
+  renderAdminLinks();
+}
+
+function renderAdminLinks(){
+  let links=loadLinks();
+  let html="";
+  links.forEach((l,i)=>{
+    html+=`<li><img src="${l.img}" class="link-img"> <a href="${l.url}" target="_blank">${l.title}</a></li>`;
+  });
+  adminLinksList.innerHTML=html;
+}
+
+function renderUserLinks(){
+  let links=loadLinks();
+  let html="";
+  links.forEach(l=>{
+    html+=`<li><img src="${l.img}" class="link-img"> <a href="${l.url}" target="_blank">${l.title}</a></li>`;
+  });
+  linksList.innerHTML=html;
+}
+</script>
+</body>
+  </html>
